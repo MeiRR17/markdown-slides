@@ -53,6 +53,9 @@
     <div class="present-progress" role="progressbar" aria-label="Presentation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="present-progress"><div id="present-progress-fill"></div></div>
     <div class="present-toolbar">
       <button id="present-previous" type="button" aria-label="Previous slide">←</button>
+      <label class="present-jump-label" for="present-jump">Go to slide
+        <input id="present-jump" type="number" inputmode="numeric" min="1" max="1" value="1" aria-label="Go to slide number">
+      </label>
       <span id="present-position">1 / 1</span>
       <button id="present-next" type="button" aria-label="Next slide">→</button>
       <span class="present-tool-divider" aria-hidden="true"></span>
