@@ -17,7 +17,7 @@ The editor starts with an example deck unless you have already saved a draft in 
 1. Write plain Markdown in the left editor. Separate slides with a line containing exactly three hyphens.
 2. Select a slide in the outline. The preview updates immediately.
 3. Choose Clean light, Midnight, or Warm sand.
-4. Press **Present deck** for full-screen presentation mode. Navigate with Right/Down/Space (next) or Left/Up (previous); Home/End jump to the beginning/end; Escape exits. The presentation toolbar displays a live elapsed-time clock, pause/resume button and reset button. Press **P** to pause/resume or **R** to reset the timer. A progress bar indicates slide position. The timer resets when you start a new presentation session.
+4. Press **Present deck** for full-screen presentation mode. Navigate with Right/Down/Space (next) or Left/Up (previous); Home/End jump to the beginning/end; Escape exits. The presentation toolbar includes a numeric **Go to slide** input for jumping to a specific slide without stepping through intermediate slides. Typing a slide number does not trigger presentation keyboard shortcuts. The presentation toolbar displays a live elapsed-time clock, pause/resume button and reset button. Press **P** to pause/resume or **R** to reset the timer. A progress bar indicates slide position. The timer resets when you start a new presentation session.
 5. Export your deck as a .md file. Use **Print / PDF** to print all slides or save a PDF using your browser print dialog.
 
 ## Supported Markdown
@@ -54,3 +54,5 @@ Input is limited to 200,000 characters and 120 slides. The application does not 
 ## Author
 
 Built by Meir Dvir · https://github.com/MeiRR17
+
+Local `.md` imports are validated before replacing the deck, require confirmation if replacing content, and ignore stale file reads after edits or newer file selections.
