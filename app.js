@@ -135,6 +135,8 @@ function renderSelected() {
   $('slide-number').textContent = position + ' / ' + total;
   $('present-number').textContent = position + ' / ' + total;
   $('present-position').textContent = position + ' / ' + total;
+  $('present-jump').max = String(Math.max(1,total));
+  $('present-jump').value = String(Math.max(1,position));
   const progress = total ? Math.round(position / total * 100) : 0;
   $('present-progress-fill').style.width = progress + '%';
   $('present-progress').setAttribute('aria-valuenow', String(progress));
@@ -266,6 +268,13 @@ $('next').addEventListener('click', () => changeSlide(1));
 $('present').addEventListener('click', enterPresentation);
 $('present-previous').addEventListener('click', () => changeSlide(-1));
 $('present-next').addEventListener('click', () => changeSlide(1));
+$('present-jump').addEventListener('change', () => {
+  const target = Number($('present-jump').value);
+  if (Number.isInteger(target) && target >= 1 && target <= slides.length) {
+    selected = target - 1;
+  }
+  renderSelected();
+});
 $('exit').addEventListener('click', exitPresentation);
 $('present-pause').addEventListener('click', toggleClock);
 $('present-reset').addEventListener('click', resetClock);
@@ -275,6 +284,8 @@ document.addEventListener('fullscreenchange', () => {
 document.addEventListener('keydown', event => {
   if (!showing) return;
   if (event.key === 'Escape') { event.preventDefault(); exitPresentation(); }
+  else if (event.target instanceof HTMLElement &&
+           (event.target.matches('input, textarea, select') || event.target.isContentEditable)) return;
   else if (event.key.toLowerCase() === 'p' && !event.ctrlKey && !event.metaKey && !event.altKey) {
     event.preventDefault(); toggleClock();
   } else if (event.key.toLowerCase() === 'r' && !event.ctrlKey && !event.metaKey && !event.altKey) {
