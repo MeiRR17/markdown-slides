@@ -1,2 +1,55 @@
-# markdown-slides
-Write slides in Markdown, present them in the browser
+# Markdown Slides
+
+Write a presentation in Markdown, preview it in a browser, and switch to distraction-free presentation mode. No accounts, build process, backend, dependencies, or cloud storage.
+
+## Start
+
+Serve the repository root with any static web server. For example:
+
+    python3 -m http.server 8000
+
+Open http://localhost:8000. A local HTTP server is recommended for native ES modules; GitHub Pages or another static host also works.
+
+The editor starts with an example deck unless you have already saved a draft in the browser.
+
+## Workflow
+
+1. Write plain Markdown in the left editor. Separate slides with a line containing exactly three hyphens.
+2. Select a slide in the outline. The preview updates immediately.
+3. Choose Clean light, Midnight, or Warm sand.
+4. Press **Present deck** for full-screen presentation mode. Navigate with Right/Down/Space (next) or Left/Up (previous); Home/End jump to the beginning/end; Escape exits.
+5. Export your deck as a .md file. Use **Print / PDF** to print all slides or save a PDF using your browser print dialog.
+
+## Supported Markdown
+
+- Headings using one to four leading hash symbols; paragraphs
+- Bulleted lists and numbered lists
+- Bold and emphasis, inline code, triple-backtick fenced code blocks
+- Block quotes, horizontal rules with three asterisks or underscores
+- Standard hyperlinks and external image references
+- A separate line of three hyphens to create the next slide (not inside a code fence)
+- Speaker notes after a standalone line with three question marks; notes appear in the editor but are never included in the slide presentation or print output
+
+HTML markup is **not** interpreted. The renderer constructs DOM elements and text nodes, avoiding HTML injection. Inline Markdown is intentionally a small subset, not full CommonMark: nested inline markup, complex tables, and nested lists are not currently supported.
+
+## Privacy
+
+Deck text stays on your device and auto-saves to localStorage in the current browser profile. There is no analytics, server storage, or account service. Export .md files for backup and device transfer.
+
+**External images and links:** A Markdown image using an http(s) address causes the browser to request that URL from the image host; links navigate to their destination when clicked. Avoid external images when working with confidential decks.
+
+## Limits and status
+
+Input is limited to 200,000 characters and 120 slides. The application does not require third-party libraries. This version is implementation-only and is awaiting the owner's consolidated testing cycle.
+
+## Source
+
+- index.html — responsive editor, live preview, presentation controls
+- styles.css — clean, midnight, warm sand and print themes
+- src/markdown.js — Markdown slide parser, notes parser and safe DOM renderer
+- app.js — local draft persistence, slide navigation, import/export and printing
+- LICENSE — MIT
+
+## Author
+
+Built by Meir Dvir · https://github.com/MeiRR17
