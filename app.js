@@ -301,6 +301,26 @@ document.addEventListener('keydown', event => {
     event.preventDefault(); selected = slides.length - 1; renderSelected();
   }
 });
+$('new-deck').addEventListener('click', () => {
+  if (!confirm('Create a blank deck? This will erase the current deck and replace its local browser autosave. Export your Markdown first if you need a backup.')) return;
+  // Do not allow a pending autosave or file import to restore an older draft.
+  if (draftTimer !== null) clearTimeout(draftTimer);
+  draftTimer = null;
+  importRequest++;
+  deckRevision++;
+  source.value = '';
+  selected = 0;
+  updateDeck();
+  try {
+    // An explicit empty value survives reload instead of falling back to
+    // SAMPLE. No previous deck content is kept in this storage entry.
+    localStorage.setItem(STORE_KEY, '');
+    message('Blank deck created. The previous local autosave was replaced.');
+  } catch {
+    message('Blank deck created, but browser storage could not be cleared. An earlier saved deck may return on reload.', 'error');
+  }
+  source.focus();
+});
 $('example').addEventListener('click', () => {
   if (source.value.trim() && source.value !== SAMPLE &&
       !confirm('Replace the current deck with the example? Export your existing Markdown if needed.')) return;
