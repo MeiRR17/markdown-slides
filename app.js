@@ -45,6 +45,11 @@ let slides = [];
 let selected = 0;
 let showing = false;
 let draftTimer = null;
+let clockTimer = null;
+let clockStartedAt = null;
+let clockElapsed = 0;
+let clockPaused = false;
+
 
 function message(value, kind = '') {
   $('message').textContent = value;
@@ -63,6 +68,52 @@ function setTheme(value) {
   $('theme').value = theme;
   try { localStorage.setItem(THEME_KEY, theme); } catch { /* In-memory theme still works. */ }
 }
+function formatClock(milliseconds) {
+  const seconds = Math.floor(Math.max(0, milliseconds) / 1000);
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor(seconds / 60) % 60;
+  const remainder = seconds % 60;
+  return (hours ? String(hours).padStart(2, '0') + ':' : '') +
+    String(minutes).padStart(2, '0') + ':' + String(remainder).padStart(2, '0');
+}
+function currentElapsed() {
+  return clockElapsed + (clockStartedAt === null ? 0 : performance.now() - clockStartedAt);
+}
+function updateClock() {
+  $('present-clock').textContent = formatClock(currentElapsed());
+  $('present-pause').textContent = clockPaused ? '▶ Resume' : 'Ⅱ Pause';
+  $('present-pause').setAttribute('aria-pressed', String(clockPaused));
+}
+function startClock() {
+  stopClock();
+  clockElapsed = 0;
+  clockPaused = false;
+  clockStartedAt = performance.now();
+  clockTimer = setInterval(updateClock, 250);
+  updateClock();
+}
+function stopClock() {
+  if (clockTimer !== null) clearInterval(clockTimer);
+  clockTimer = null;
+  clockStartedAt = null;
+}
+function toggleClock() {
+  if (!showing) return;
+  if (clockPaused) {
+    clockStartedAt = performance.now();
+  } else {
+    clockElapsed = currentElapsed();
+    clockStartedAt = null;
+  }
+  clockPaused = !clockPaused;
+  updateClock();
+}
+function resetClock() {
+  clockElapsed = 0;
+  if (!clockPaused) clockStartedAt = performance.now();
+  updateClock();
+}
+
 function renderSelected() {
   const total = slides.length;
   selected = Math.max(0, Math.min(selected, total - 1));
@@ -82,6 +133,9 @@ function renderSelected() {
   $('slide-number').textContent = position + ' / ' + total;
   $('present-number').textContent = position + ' / ' + total;
   $('present-position').textContent = position + ' / ' + total;
+  const progress = total ? Math.round(position / total * 100) : 0;
+  $('present-progress-fill').style.width = progress + '%';
+  $('present-progress').setAttribute('aria-valuenow', String(progress));
   $('position').textContent = 'Slide ' + position + ' of ' + total;
   $('slide-count').textContent = total + (total === 1 ? ' slide' : ' slides');
   $('notes').textContent = slide?.notes || 'Add notes after ??? on a slide.';
@@ -140,6 +194,7 @@ function changeSlide(delta) {
 function enterPresentation() {
   if (!slides.length) return;
   showing = true;
+  startClock();
   presentLayer.hidden = false;
   document.body.classList.add('presenting');
   renderSelected();
@@ -151,6 +206,7 @@ function enterPresentation() {
 function exitPresentation() {
   if (!showing) return;
   showing = false;
+  stopClock();
   presentLayer.hidden = true;
   document.body.classList.remove('presenting');
   if (document.fullscreenElement === presentLayer && document.exitFullscreen) {
@@ -208,12 +264,19 @@ $('present').addEventListener('click', enterPresentation);
 $('present-previous').addEventListener('click', () => changeSlide(-1));
 $('present-next').addEventListener('click', () => changeSlide(1));
 $('exit').addEventListener('click', exitPresentation);
+$('present-pause').addEventListener('click', toggleClock);
+$('present-reset').addEventListener('click', resetClock);
 document.addEventListener('fullscreenchange', () => {
   if (showing && document.fullscreenElement !== presentLayer) exitPresentation();
 });
 document.addEventListener('keydown', event => {
   if (!showing) return;
   if (event.key === 'Escape') { event.preventDefault(); exitPresentation(); }
+  else if (event.key.toLowerCase() === 'p' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault(); toggleClock();
+  } else if (event.key.toLowerCase() === 'r' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault(); resetClock();
+  }
   else if (event.key === 'ArrowRight' || event.key === 'ArrowDown' || event.key === ' ') {
     event.preventDefault(); changeSlide(1);
   } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
