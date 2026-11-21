@@ -17,7 +17,7 @@ The editor starts with an example deck unless you have already saved a draft in 
 1. Write plain Markdown in the left editor. Separate slides with a line containing exactly three hyphens.
 2. Select a slide in the outline. The preview updates immediately.
 3. Choose Clean light, Midnight, or Warm sand.
-4. Press **Present deck** for full-screen presentation mode. Navigate with Right/Down/Space (next) or Left/Up (previous); Home/End jump to the beginning/end; Escape exits.
+4. Press **Present deck** for full-screen presentation mode. Navigate with Right/Down/Space (next) or Left/Up (previous); Home/End jump to the beginning/end; Escape exits. The presentation toolbar displays a live elapsed-time clock, pause/resume button and reset button. Press **P** to pause/resume or **R** to reset the timer. A progress bar indicates slide position. The timer resets when you start a new presentation session.
 5. Export your deck as a .md file. Use **Print / PDF** to print all slides or save a PDF using your browser print dialog.
 
 ## Supported Markdown
@@ -29,6 +29,7 @@ The editor starts with an example deck unless you have already saved a draft in 
 - Standard hyperlinks and external image references
 - A separate line of three hyphens to create the next slide (not inside a code fence)
 - Speaker notes after a standalone line with three question marks; notes appear in the editor but are never included in the slide presentation or print output
+- Presentation progress and timer are temporary, in-memory UI state; nothing about elapsed presenting time is saved or transmitted
 
 HTML markup is **not** interpreted. The renderer constructs DOM elements and text nodes, avoiding HTML injection. Inline Markdown is intentionally a small subset, not full CommonMark: nested inline markup, complex tables, and nested lists are not currently supported.
 
@@ -47,7 +48,7 @@ Input is limited to 200,000 characters and 120 slides. The application does not 
 - index.html — responsive editor, live preview, presentation controls
 - styles.css — clean, midnight, warm sand and print themes
 - src/markdown.js — Markdown slide parser, notes parser and safe DOM renderer
-- app.js — local draft persistence, slide navigation, import/export and printing
+- app.js — local draft persistence, slide navigation, presenter clock, import/export and printing
 - LICENSE — MIT
 
 ## Author
