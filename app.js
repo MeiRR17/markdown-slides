@@ -45,6 +45,8 @@ let slides = [];
 let selected = 0;
 let showing = false;
 let draftTimer = null;
+let deckRevision = 0;
+let importRequest = 0;
 let clockTimer = null;
 let clockStartedAt = null;
 let clockElapsed = 0;
@@ -246,6 +248,7 @@ function download(name, contents, type) {
 }
 
 source.addEventListener('input', () => {
+  deckRevision++;
   updateDeck();
   if (draftTimer !== null) clearTimeout(draftTimer);
   draftTimer = setTimeout(saveDraft, 400);
@@ -290,6 +293,7 @@ document.addEventListener('keydown', event => {
 $('example').addEventListener('click', () => {
   if (source.value.trim() && source.value !== SAMPLE &&
       !confirm('Replace the current deck with the example? Export your existing Markdown if needed.')) return;
+  deckRevision++;
   source.value = SAMPLE;
   selected = 0;
   updateDeck();
@@ -300,16 +304,33 @@ $('import-file').addEventListener('change', async event => {
   const file = event.target.files?.[0];
   event.target.value = '';
   if (!file) return;
-  if (file.size > MAX_SOURCE) { message('The file exceeds the 200 KB deck limit.', 'error'); return; }
+  const request = ++importRequest;
+  const revision = deckRevision;
+  if (file.size > MAX_SOURCE) {
+    message('The file exceeds the 200 KB deck limit.', 'error');
+    return;
+  }
   try {
     const contents = await file.text();
+    if (request !== importRequest) return;
+    if (revision !== deckRevision) {
+      message('The deck changed while reading the file. Import cancelled to preserve your edits.', 'error');
+      return;
+    }
     parseDeck(contents);
-    if (source.value.trim() && !confirm('Replace your current deck with this file?')) return;
+    if (source.value.trim() && source.value !== contents &&
+        !confirm('Replace your current deck with this file?')) return;
+    if (request !== importRequest || revision !== deckRevision) return;
+    deckRevision++;
     source.value = contents;
     selected = 0;
     updateDeck();
+    if (draftTimer !== null) clearTimeout(draftTimer);
+    draftTimer = null;
     saveDraft();
-  } catch (error) { message('Import failed: ' + error.message, 'error'); }
+  } catch (error) {
+    if (request === importRequest) message('Import failed: ' + error.message, 'error');
+  }
 });
 $('export').addEventListener('click', () => download('presentation.md', source.value, 'text/markdown;charset=utf-8'));
 $('print').addEventListener('click', () => {
