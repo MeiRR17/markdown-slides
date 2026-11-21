@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#121d31">
+  <meta name="description" content="Write presentations in Markdown, preview instantly and present full-screen. No accounts, frameworks or server storage.">
+  <title>Markdown Slides — a simpler way to present</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body data-theme="light">
+  <header class="topbar">
+    <a class="brand" href="./"><span class="brand-icon" aria-hidden="true">▤</span><strong>markdown<span>slides</span></strong><small>studio</small></a>
+    <div class="top-actions"><span class="private" title="Deck data stays on this device">◈ Local only</span>
+      <a href="https://github.com/MeiRR17/markdown-slides" target="_blank" rel="noopener noreferrer">GitHub ↗</a></div>
+  </header>
+  <main class="shell">
+    <section class="intro">
+      <div class="eyebrow">WRITE LESS SETUP. PRESENT MORE.</div>
+      <div class="intro-row"><div><h1>From Markdown <em>to the big screen.</em></h1>
+        <p>Draft slides in plain text, see your presentation take shape, then present or print. Everything stays in your browser.</p></div>
+        <button type="button" id="present" class="button primary">▶ Present deck</button></div>
+    </section>
+    <div id="message" class="message" role="status" aria-live="polite"></div>
+    <div class="workbench">
+      <section class="editor-panel" aria-labelledby="editor-title">
+        <div class="panel-head">
+          <div><span class="section-index">01 / WRITE</span><h2 id="editor-title">Markdown editor</h2></div>
+          <div class="head-actions"><button id="example" type="button" class="text-button">Example</button><button id="import" type="button" class="text-button">Import .md</button><input id="import-file" type="file" accept=".md,.markdown,.txt,text/plain" hidden></div>
+        </div>
+        <label for="source" class="sr-only">Markdown slide content</label>
+        <textarea id="source" spellcheck="false" aria-describedby="syntax-hint"></textarea>
+        <div class="editor-foot"><span id="syntax-hint">Use --- on a line of its own to start a new slide.</span><span id="char-count">0 chars</span></div>
+        <div class="editor-actions"><button id="export" class="button secondary" type="button">↓ Export Markdown</button><button id="print" class="button secondary" type="button">▤ Print / PDF</button></div>
+        <details class="syntax-help"><summary>Markdown quick reference</summary><p>Headings: # Title · ## Section. Lists: - Item or 1. Item. Bold: **word**. Italic: *word*. Code: backticks or a fenced block. Links: [label](https://example.com). Separate slides with --- on its own line. Add speaker notes after a line containing ???.</p></details>
+      </section>
+      <section class="preview-panel" aria-labelledby="preview-title">
+        <div class="panel-head preview-head">
+          <div><span class="section-index">02 / PREVIEW</span><h2 id="preview-title">Live presentation</h2></div>
+          <div class="theme-wrap"><label for="theme">Theme</label><select id="theme"><option value="light">Clean light</option><option value="midnight">Midnight</option><option value="sand">Warm sand</option></select></div>
+        </div>
+        <div class="stage-shell"><div id="stage" class="stage" role="group" aria-label="Current slide"><div id="slide-body" class="slide-body"></div><span class="slide-number" id="slide-number">1 / 1</span></div></div>
+        <div class="slide-controls"><button type="button" class="nav" id="previous" aria-label="Previous slide">←</button><span id="position">Slide 1 of 1</span><button type="button" class="nav" id="next" aria-label="Next slide">→</button><span class="control-spacer"></span><span class="hint">← / → to navigate in presentation mode</span></div>
+        <div class="outline-wrap"><div class="outline-heading"><h3>Slide outline</h3><span id="slide-count">0 slides</span></div><nav id="outline" class="outline" aria-label="Choose a slide"></nav></div>
+        <div class="notes"><h3>Speaker notes <span>(not shown during presentation)</span></h3><p id="notes">Add notes after ??? on a slide.</p></div>
+      </section>
+    </div>
+    <div class="privacy">◈ Auto-saved on this device. Import and export Markdown to move your deck elsewhere. No tracking or cloud sync.</div>
+  </main>
+  <div id="presentation" class="presentation" hidden role="dialog" aria-modal="true" aria-label="Slide presentation">
+    <div class="present-stage" id="present-stage"><div class="slide-body" id="present-body"></div><span class="slide-number" id="present-number"></span></div>
+    <div class="present-toolbar"><button id="present-previous" type="button" aria-label="Previous slide">←</button><span id="present-position">1 / 1</span><button id="present-next" type="button" aria-label="Next slide">→</button><button id="exit" type="button" title="Exit (Esc)">× Exit</button></div>
+  </div>
+  <footer><span>Markdown Slides · Open-source presentation studio</span><span>Built by <a href="https://github.com/MeiRR17" target="_blank" rel="noopener noreferrer">Meir Dvir</a></span></footer>
+</body>
+</html>
