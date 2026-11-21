@@ -41,7 +41,7 @@
           <div class="theme-wrap"><label for="theme">Theme</label><select id="theme"><option value="light">Clean light</option><option value="midnight">Midnight</option><option value="sand">Warm sand</option></select></div>
         </div>
         <div class="stage-shell"><div id="stage" class="stage" role="group" aria-label="Current slide"><div id="slide-body" class="slide-body"></div><span class="slide-number" id="slide-number">1 / 1</span></div></div>
-        <div class="slide-controls"><button type="button" class="nav" id="previous" aria-label="Previous slide">←</button><span id="position">Slide 1 of 1</span><button type="button" class="nav" id="next" aria-label="Next slide">→</button><span class="control-spacer"></span><span class="hint">← / → to navigate in presentation mode</span></div>
+        <div class="slide-controls"><button type="button" class="nav" id="previous" aria-label="Previous slide">←</button><span id="position">Slide 1 of 1</span><button type="button" class="nav" id="next" aria-label="Next slide">→</button><span class="control-spacer"></span><span class="hint">← / → to navigate · P pauses timer · R resets timer</span></div>
         <div class="outline-wrap"><div class="outline-heading"><h3>Slide outline</h3><span id="slide-count">0 slides</span></div><nav id="outline" class="outline" aria-label="Choose a slide"></nav></div>
         <div class="notes"><h3>Speaker notes <span>(not shown during presentation)</span></h3><p id="notes">Add notes after ??? on a slide.</p></div>
       </section>
@@ -50,7 +50,17 @@
   </main>
   <div id="presentation" class="presentation" hidden role="dialog" aria-modal="true" aria-label="Slide presentation">
     <div class="present-stage" id="present-stage"><div class="slide-body" id="present-body"></div><span class="slide-number" id="present-number"></span></div>
-    <div class="present-toolbar"><button id="present-previous" type="button" aria-label="Previous slide">←</button><span id="present-position">1 / 1</span><button id="present-next" type="button" aria-label="Next slide">→</button><button id="exit" type="button" title="Exit (Esc)">× Exit</button></div>
+    <div class="present-progress" role="progressbar" aria-label="Presentation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="present-progress"><div id="present-progress-fill"></div></div>
+    <div class="present-toolbar">
+      <button id="present-previous" type="button" aria-label="Previous slide">←</button>
+      <span id="present-position">1 / 1</span>
+      <button id="present-next" type="button" aria-label="Next slide">→</button>
+      <span class="present-tool-divider" aria-hidden="true"></span>
+      <time id="present-clock" class="present-clock" aria-label="Elapsed presentation time">00:00</time>
+      <button id="present-pause" type="button" title="Pause or resume timer (P)" aria-pressed="false">Ⅱ Pause</button>
+      <button id="present-reset" type="button" title="Reset timer (R)">↺</button>
+      <button id="exit" type="button" title="Exit (Esc)">× Exit</button>
+    </div>
   </div>
   <footer><span>Markdown Slides · Open-source presentation studio</span><span>Built by <a href="https://github.com/MeiRR17" target="_blank" rel="noopener noreferrer">Meir Dvir</a></span></footer>
 </body>
