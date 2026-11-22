@@ -25,11 +25,11 @@ The editor starts with an example deck unless you have already saved a draft in 
 
 - Headings using one to four leading hash symbols; paragraphs
 - Bulleted lists and numbered lists
-- Bold and emphasis, inline code, triple-backtick fenced code blocks
+- Bold and emphasis, inline code, backtick or tilde fenced code blocks (three or more matching markers; a closing fence must be at least as long as its opening fence)
 - Block quotes, horizontal rules with three asterisks or underscores
 - Standard hyperlinks and external image references
-- A separate line of three hyphens to create the next slide (not inside a code fence)
-- Speaker notes after a standalone line with three question marks; notes appear in the editor but are never included in the slide presentation or print output
+- A separate line of three hyphens to create the next slide (not inside a code fence, including longer four-or-more-backtick and tilde fences)
+- Speaker notes after a standalone line with three question marks outside code fences; notes appear in the editor but are never included in the slide presentation or print output
 - Presentation progress and timer are temporary, in-memory UI state; nothing about elapsed presenting time is saved or transmitted
 
 HTML markup is **not** interpreted. The renderer constructs DOM elements and text nodes, avoiding HTML injection. Inline Markdown is intentionally a small subset, not full CommonMark: nested inline markup, complex tables, and nested lists are not currently supported.

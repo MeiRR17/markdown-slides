@@ -5,7 +5,22 @@
 export const MAX_SOURCE = 200_000;
 export const MAX_SLIDES = 120;
 
-const isFence = line => /^\s*\x60{3}/.test(line);
+// Track marker and fence length: shorter delimiters in code examples must
+// not split a slide or prematurely terminate speaker notes.
+function openingFence(line) {
+  const match = /^ {0,3}(\x60{3,}|~{3,})(.*)$/.exec(line);
+  if (!match || (match[1].charCodeAt(0) === 96 && match[2].includes('\x60'))) return null;
+  return {
+    marker: match[1][0],
+    length: match[1].length,
+    language: match[2].trim().split(/\s+/)[0].slice(0, 24),
+  };
+}
+function closingFence(line, opening) {
+  const match = /^ {0,3}(\x60+|~+)[ \t]*$/.exec(line);
+  return Boolean(match && match[1][0] === opening.marker &&
+    match[1].length >= opening.length);
+}
 const divider = line => /^---\s*$/.test(line);
 const heading = line => /^(#{1,4})\s+(.+)$/.exec(line);
 const listLine = line => /^(\s*)([-*+]|\d+\.)\s+(.+)$/.exec(line);
@@ -17,10 +32,14 @@ function readTitle(lines, index) {
 }
 
 function separateNotes(lines) {
-  let fenced = false;
+  let fence = null;
   for (let i = 0; i < lines.length; i++) {
-    if (isFence(lines[i])) fenced = !fenced;
-    if (!fenced && lines[i].trim() === '???') {
+    if (fence) {
+      if (closingFence(lines[i], fence)) fence = null;
+      continue;
+    }
+    fence = openingFence(lines[i]);
+    if (!fence && lines[i].trim() === '???') {
       return { content: lines.slice(0, i), notes: lines.slice(i + 1).join('\n').trim() };
     }
   }
@@ -33,7 +52,7 @@ export function parseDeck(source) {
   if (source.length > MAX_SOURCE) throw new RangeError('Slide deck exceeds 200,000 characters.');
   const lines = source.replace(/\r\n?/g, '\n').split('\n');
   const slides = [];
-  let block = [], fenced = false;
+  let block = [], fence = null;
   function flush() {
     if (!block.some(line => line.trim())) { block = []; return; }
     const { content, notes } = separateNotes(block);
@@ -42,9 +61,11 @@ export function parseDeck(source) {
     block = [];
   }
   for (const line of lines) {
-    if (!fenced && divider(line)) { flush(); continue; }
+    if (!fence && divider(line)) { flush(); continue; }
     block.push(line);
-    if (isFence(line)) fenced = !fenced;
+    if (fence) {
+      if (closingFence(line, fence)) fence = null;
+    } else fence = openingFence(line);
   }
   flush();
   return slides;
@@ -102,7 +123,7 @@ export function appendInline(parent, value) {
   }
   addText(parent, value.slice(position));
 }
-const isBlock = line => !line.trim() || isFence(line) || heading(line) ||
+const isBlock = line => !line.trim() || openingFence(line) || heading(line) ||
   listLine(line) || quoteLine(line) || /^\s*(?:\*\*\*|___)\s*$/.test(line);
 
 /** Render one slide from the supported Markdown subset into a target element. */
@@ -112,15 +133,15 @@ export function renderSlide(slide, target) {
   for (let i = 0; i < lines.length;) {
     const line = lines[i];
     if (!line.trim()) { i++; continue; }
-    if (isFence(line)) {
-      const lang = line.trim().slice(3).trim().slice(0, 24);
+    const fence = openingFence(line);
+    if (fence) {
       const body = [];
       i++;
-      while (i < lines.length && !isFence(lines[i])) body.push(lines[i++]);
+      while (i < lines.length && !closingFence(lines[i], fence)) body.push(lines[i++]);
       if (i < lines.length) i++;
       const pre = element('pre');
       const code = element('code');
-      if (lang) code.dataset.language = lang;
+      if (fence.language) code.dataset.language = fence.language;
       code.textContent = body.join('\n');
       pre.append(code); target.append(pre);
       continue;
