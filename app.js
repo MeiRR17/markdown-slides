@@ -1,4 +1,4 @@
-import { parseDeck, renderSlide, MAX_SOURCE } from './src/markdown.js';
+import { parseDeck, renderSlide, speakerNotesText, MAX_SOURCE } from './src/markdown.js';
 
 const $ = id => document.getElementById(id);
 const source = $('source');
@@ -146,6 +146,7 @@ function renderSelected() {
   $('previous').disabled = $('present-previous').disabled = position <= 1;
   $('next').disabled = $('present-next').disabled = position >= total;
   $('present').disabled = total === 0;
+  $('export-notes').disabled = !slides.some(slide => slide.notes.trim());
 
   $('outline').querySelectorAll('[data-slide]').forEach(button => {
     const active = Number(button.dataset.slide) === selected;
@@ -364,6 +365,15 @@ $('import-file').addEventListener('change', async event => {
   }
 });
 $('export').addEventListener('click', () => download('presentation.md', source.value, 'text/markdown;charset=utf-8'));
+$('export-notes').addEventListener('click', () => {
+  try {
+    const contents = speakerNotesText(slides);
+    download('speaker-notes.txt', contents, 'text/plain;charset=utf-8');
+    message('Speaker notes exported. The file may contain private speaking material; store it carefully.');
+  } catch (error) {
+    message(error.message, 'error');
+  }
+});
 $('print').addEventListener('click', () => {
   if (!slides.length) { message('Add a slide before printing.', 'error'); return; }
   buildPrintDeck();

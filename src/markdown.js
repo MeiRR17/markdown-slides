@@ -71,6 +71,32 @@ export function parseDeck(source) {
   return slides;
 }
 
+/**
+ * Export an explicit speaker-only note sheet, without slide bodies or images.
+ * This is plain text, not Markdown rendering. Slides with no notes are omitted,
+ * but original slide numbers are preserved for reliable cross-reference.
+ */
+export function speakerNotesText(slides) {
+  if (!Array.isArray(slides) || slides.length > MAX_SLIDES) {
+    throw new TypeError('Expected a parsed deck of up to 120 slides.');
+  }
+  const sections = [];
+  for (let i = 0; i < slides.length; i++) {
+    const slide = slides[i];
+    if (!slide || typeof slide.title !== 'string' || typeof slide.notes !== 'string') {
+      throw new TypeError('Invalid slide speaker notes.');
+    }
+    const notes = slide.notes.trim();
+    if (!notes) continue;
+    sections.push('Slide ' + (i + 1) + ' — ' + slide.title.replace(/[\r\n]+/g, ' ') +
+      '\n' + '-'.repeat(32) + '\n' + notes);
+  }
+  if (!sections.length) throw new RangeError('No speaker notes to export.');
+  return 'Speaker notes — exported locally\n' +
+    'Deck slides: ' + slides.length + ' · Slides with notes: ' + sections.length +
+    '\n\n' + sections.join('\n\n') + '\n';
+}
+
 const element = (tag, cls = '') => {
   const node = document.createElement(tag);
   if (cls) node.className = cls;
