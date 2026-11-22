@@ -44,6 +44,7 @@ const SAMPLE = [
 let slides = [];
 let selected = 0;
 let showing = false;
+let blackedOut = false;
 let draftTimer = null;
 let deckRevision = 0;
 let importRequest = 0;
@@ -196,8 +197,20 @@ function changeSlide(delta) {
     renderSelected();
   }
 }
+// A black-screen break hides slide content only. Navigation and the presenter
+// clock remain available, and neither deck content nor autosave is changed.
+function setBlackout(active) {
+  blackedOut = active;
+  $('present-blackout').hidden = !active;
+  $('present-blackout-toggle').setAttribute('aria-pressed', String(active));
+  $('present-blackout-toggle').textContent = active ? '◻ Show slide' : '■ Black screen';
+}
+function toggleBlackout() {
+  if (showing) setBlackout(!blackedOut);
+}
 function enterPresentation() {
   if (!slides.length) return;
+  setBlackout(false);
   showing = true;
   startClock();
   presentLayer.hidden = false;
@@ -211,6 +224,7 @@ function enterPresentation() {
 function exitPresentation() {
   if (!showing) return;
   showing = false;
+  setBlackout(false);
   stopClock();
   presentLayer.hidden = true;
   document.body.classList.remove('presenting');
@@ -297,6 +311,7 @@ $('present-jump').addEventListener('change', () => {
 $('exit').addEventListener('click', exitPresentation);
 $('present-pause').addEventListener('click', toggleClock);
 $('present-reset').addEventListener('click', resetClock);
+$('present-blackout-toggle').addEventListener('click', toggleBlackout);
 document.addEventListener('fullscreenchange', () => {
   if (showing && document.fullscreenElement !== presentLayer) exitPresentation();
 });
@@ -305,7 +320,11 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape') { event.preventDefault(); exitPresentation(); }
   else if (event.target instanceof HTMLElement &&
            (event.target.matches('input, textarea, select') || event.target.isContentEditable)) return;
-  else if (event.key.toLowerCase() === 'p' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+  else if (event.key.toLowerCase() === 'b' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault();
+    // Suppress keyboard auto-repeat: one physical press makes one toggle.
+    if (!event.repeat) toggleBlackout();
+  } else if (event.key.toLowerCase() === 'p' && !event.ctrlKey && !event.metaKey && !event.altKey) {
     event.preventDefault(); toggleClock();
   } else if (event.key.toLowerCase() === 'r' && !event.ctrlKey && !event.metaKey && !event.altKey) {
     event.preventDefault(); resetClock();

@@ -7,3 +7,8 @@
 .present-jump-label input{width:58px;min-width:0;border:1px solid #7c91b1;background:#f9fbff;color:#162b4d;border-radius:6px;padding:6px 5px;font:700 13px ui-sans-serif,system-ui,sans-serif;text-align:center}
 .present-jump-label input:focus-visible{outline:2px solid #6ba7f9;outline-offset:2px}
 @media(max-width:560px){.present-jump-label{font-size:0;gap:0}.present-jump-label input{width:48px;font-size:12px}}
+
+/* Temporary presenter black screen. The presenter toolbar stays accessible;
+   its slide content and number are covered without mutating the source deck. */
+.present-blackout{position:absolute;inset:0;background:#000;z-index:3;pointer-events:none}
+.present-blackout[hidden]{display:none}
