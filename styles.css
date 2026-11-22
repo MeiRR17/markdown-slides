@@ -19,3 +19,8 @@
 .outline-search-controls input:focus-visible{outline:2px solid var(--blue)}
 .outline-search-controls span{font-size:11px;color:#8b9db2}
 .outline-empty{margin:5px 0 12px;font-size:12px;color:#697b94}
+
+/* Preparation-only speaker-notes filter: notes are never rendered in the outline. */
+.outline-notes-filter{display:inline-flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap;cursor:pointer}
+.outline-notes-filter input{accent-color:var(--blue,#2563eb)}
+.outline-note-count{margin:0 0 9px;color:#8290a6;font-size:12px}

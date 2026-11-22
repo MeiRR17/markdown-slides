@@ -158,16 +158,24 @@ function renderSelected() {
 function buildOutline() {
   const outline = $('outline');
   const query = $('outline-search').value.trim().toLocaleLowerCase();
+  const notesOnly = $('outline-notes-only').checked;
+  const noteCount = slides.filter(slide => typeof slide.notes === 'string' &&
+    slide.notes.trim()).length;
   const matches = slides.map((slide, index) => ({slide, index}))
-    .filter(({slide}) => !query || slide.title.toLocaleLowerCase().includes(query));
+    .filter(({slide}) => (!query || slide.title.toLocaleLowerCase().includes(query)) &&
+      (!notesOnly || (typeof slide.notes === 'string' && slide.notes.trim())));
   outline.replaceChildren();
-  $('outline-match-count').textContent = query
-    ? matches.length + ' of ' + slides.length + ' titles found'
+  $('notes-slide-count').textContent = noteCount +
+    (noteCount === 1 ? ' slide with notes' : ' slides with notes');
+  $('outline-match-count').textContent = query || notesOnly
+    ? matches.length + ' of ' + slides.length + ' slides shown'
     : '';
-  if (!matches.length && query) {
+  if (!matches.length && (query || notesOnly)) {
     const empty = document.createElement('p');
     empty.className = 'outline-empty';
-    empty.textContent = 'No slide titles match your search. Clear the search to show all slides.';
+    empty.textContent = notesOnly
+      ? 'No slides with speaker notes match the current title search. Clear the filters to see all slides.'
+      : 'No slide titles match your search. Clear the filters to show all slides.';
     outline.append(empty);
   }
   matches.forEach(({slide, index}) => {
@@ -309,8 +317,10 @@ source.addEventListener('keydown', event => {
 });
 $('theme').addEventListener('change', event => setTheme(event.target.value));
 $('outline-search').addEventListener('input', () => { buildOutline(); renderSelected(); });
+$('outline-notes-only').addEventListener('change', () => { buildOutline(); renderSelected(); });
 $('outline-clear').addEventListener('click', () => {
   $('outline-search').value = '';
+  $('outline-notes-only').checked = false;
   buildOutline();
   renderSelected();
   $('outline-search').focus();
@@ -368,6 +378,7 @@ $('new-deck').addEventListener('click', () => {
   source.value = '';
   selected = 0;
   $('outline-search').value = '';
+  $('outline-notes-only').checked = false;
   updateDeck();
   try {
     // An explicit empty value survives reload instead of falling back to
@@ -386,6 +397,7 @@ $('example').addEventListener('click', () => {
   source.value = SAMPLE;
   selected = 0;
   $('outline-search').value = '';
+  $('outline-notes-only').checked = false;
   updateDeck();
   saveDraft();
 });
@@ -415,6 +427,7 @@ $('import-file').addEventListener('change', async event => {
     source.value = contents;
     selected = 0;
     $('outline-search').value = '';
+    $('outline-notes-only').checked = false;
     updateDeck();
     if (draftTimer !== null) clearTimeout(draftTimer);
     draftTimer = null;
