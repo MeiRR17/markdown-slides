@@ -56,4 +56,4 @@ Input is limited to 200,000 characters and 120 slides. The application does not 
 
 Built by Meir Dvir · https://github.com/MeiRR17
 
-Local `.md` imports are validated before replacing the deck, require confirmation if replacing content, and ignore stale file reads after edits or newer file selections.
+Local `.md` imports are validated before replacing the deck, require confirmation if replacing content, and ignore stale file reads after edits or newer file selections. Import reads at most **200 KB of file bytes** and decodes UTF-8 strictly; malformed encoding is rejected instead of silently replacing characters that could corrupt titles, code examples or speaker notes. The byte limit is checked before and after reading, while the separate 200,000-character/120-slide parser limits still apply. Rejected imports leave the current deck and its autosave untouched.

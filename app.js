@@ -238,6 +238,24 @@ function buildPrintDeck() {
   }
   document.body.append(deck);
 }
+/** Read a bounded deck as strict UTF-8. File.text() would silently replace
+ * malformed sequences, potentially altering slide titles or speaker notes.
+ */
+async function readMarkdownImport(file) {
+  if (file.size > MAX_SOURCE) {
+    throw new RangeError('The file exceeds the 200 KB deck import limit.');
+  }
+  const bytes = await file.arrayBuffer();
+  // File metadata can be stale if the file changes during an asynchronous read.
+  if (bytes.byteLength > MAX_SOURCE) {
+    throw new RangeError('The file exceeds the 200 KB deck import limit.');
+  }
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
+    throw new Error('The Markdown file is not valid UTF-8; the current deck was not changed.');
+  }
+}
 function download(name, contents, type) {
   const blob = new Blob([contents], { type });
   const url = URL.createObjectURL(blob);
@@ -343,7 +361,7 @@ $('import-file').addEventListener('change', async event => {
     return;
   }
   try {
-    const contents = await file.text();
+    const contents = await readMarkdownImport(file);
     if (request !== importRequest) return;
     if (revision !== deckRevision) {
       message('The deck changed while reading the file. Import cancelled to preserve your edits.', 'error');
