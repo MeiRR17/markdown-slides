@@ -62,8 +62,24 @@ function stored(key, fallback) {
   try { return localStorage.getItem(key) ?? fallback; } catch { return fallback; }
 }
 function saveDraft() {
-  try { localStorage.setItem(STORE_KEY, source.value); }
-  catch { message('Browser storage is unavailable or full. Export your Markdown to preserve the deck.', 'error'); }
+  // Never overwrite the last recoverable autosave with an editor draft that
+  // exceeds the supported size/slide count or cannot be parsed. The user can
+  // still export the unsaved Markdown while correcting it; saving resumes as
+  // soon as the current source becomes a valid supported deck.
+  try {
+    parseDeck(source.value);
+  } catch (error) {
+    message('This deck was not autosaved: ' + error.message +
+      ' The previous valid browser draft was preserved. Export Markdown to keep the current edits.', 'error');
+    return false;
+  }
+  try {
+    localStorage.setItem(STORE_KEY, source.value);
+    return true;
+  } catch {
+    message('Browser storage is unavailable or full. Export your Markdown to preserve the deck.', 'error');
+    return false;
+  }
 }
 function setTheme(value) {
   const theme = ['light', 'midnight', 'sand'].includes(value) ? value : 'light';
