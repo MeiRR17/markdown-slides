@@ -1,4 +1,4 @@
-import { parseDeck, renderSlide, speakerNotesText, MAX_SOURCE } from './src/markdown.js';
+import { parseDeck, renderSlide, speakerNotesText, slideOutlineText, MAX_SOURCE } from './src/markdown.js';
 
 const $ = id => document.getElementById(id);
 const source = $('source');
@@ -148,6 +148,7 @@ function renderSelected() {
   $('next').disabled = $('present-next').disabled = position >= total;
   $('present').disabled = total === 0;
   $('export-notes').disabled = !slides.some(slide => slide.notes.trim());
+  $('export-outline').disabled = total === 0;
 
   $('outline').querySelectorAll('[data-slide]').forEach(button => {
     const active = Number(button.dataset.slide) === selected;
@@ -437,6 +438,14 @@ $('import-file').addEventListener('change', async event => {
   }
 });
 $('export').addEventListener('click', () => download('presentation.md', source.value, 'text/markdown;charset=utf-8'));
+$('export-outline').addEventListener('click', () => {
+  try {
+    download('slide-outline.txt', slideOutlineText(slides), 'text/plain;charset=utf-8');
+    message('Slide titles exported. The outline excludes slide bodies and speaker notes; titles may still be confidential.');
+  } catch (error) {
+    message('Outline export failed: ' + error.message, 'error');
+  }
+});
 $('export-notes').addEventListener('click', () => {
   try {
     const contents = speakerNotesText(slides);

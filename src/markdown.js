@@ -26,9 +26,21 @@ const heading = line => /^(#{1,4})\s+(.+)$/.exec(line);
 const listLine = line => /^(\s*)([-*+]|\d+\.)\s+(.+)$/.exec(line);
 const quoteLine = line => /^\s*>\s?/.test(line);
 
+// Headings shown in the outline must be actual slide content: Markdown
+// examples inside code fences should not become slide titles.
 function readTitle(lines, index) {
-  const h = lines.map(line => heading(line)).find(Boolean);
-  return h ? h[2].replace(/[\x60*_]/g, '').slice(0, 90) : 'Slide ' + (index + 1);
+  let fence = null;
+  for (const line of lines) {
+    if (fence) {
+      if (closingFence(line, fence)) fence = null;
+      continue;
+    }
+    fence = openingFence(line);
+    if (fence) continue;
+    const match = heading(line);
+    if (match) return match[2].replace(/[\x60*_]/g, '').slice(0, 90);
+  }
+  return 'Slide ' + (index + 1);
 }
 
 function separateNotes(lines) {
@@ -95,6 +107,27 @@ export function speakerNotesText(slides) {
   return 'Speaker notes — exported locally\n' +
     'Deck slides: ' + slides.length + ' · Slides with notes: ' + sections.length +
     '\n\n' + sections.join('\n\n') + '\n';
+}
+
+/**
+ * Export numbered slide headings for a compact preparation agenda.
+ * Deliberately excludes slide bodies and all speaker notes. Titles themselves
+ * may be sensitive and are flattened to one line per slide.
+ */
+export function slideOutlineText(slides) {
+  if (!Array.isArray(slides) || slides.length < 1 || slides.length > MAX_SLIDES) {
+    throw new RangeError('Expected a nonempty deck of up to 120 slides.');
+  }
+  const lines = ['Slide outline', 'Total slides: ' + slides.length, ''];
+  for (let index = 0; index < slides.length; index++) {
+    const slide = slides[index];
+    if (!slide || typeof slide.title !== 'string' || slide.title.length > 90) {
+      throw new TypeError('A slide title is missing or outside the supported range.');
+    }
+    const title = slide.title.replace(/[\r\n\u2028\u2029]+/g, ' ').trim();
+    lines.push((index + 1) + '. ' + (title || 'Slide ' + (index + 1)));
+  }
+  return lines.join('\n') + '\n';
 }
 
 const element = (tag, cls = '') => {
