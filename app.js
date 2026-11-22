@@ -157,8 +157,20 @@ function renderSelected() {
 }
 function buildOutline() {
   const outline = $('outline');
+  const query = $('outline-search').value.trim().toLocaleLowerCase();
+  const matches = slides.map((slide, index) => ({slide, index}))
+    .filter(({slide}) => !query || slide.title.toLocaleLowerCase().includes(query));
   outline.replaceChildren();
-  slides.forEach((slide, index) => {
+  $('outline-match-count').textContent = query
+    ? matches.length + ' of ' + slides.length + ' titles found'
+    : '';
+  if (!matches.length && query) {
+    const empty = document.createElement('p');
+    empty.className = 'outline-empty';
+    empty.textContent = 'No slide titles match your search. Clear the search to show all slides.';
+    outline.append(empty);
+  }
+  matches.forEach(({slide, index}) => {
     const button = document.createElement('button');
     button.type = 'button';
     button.dataset.slide = String(index);
@@ -296,6 +308,13 @@ source.addEventListener('keydown', event => {
   source.dispatchEvent(new Event('input'));
 });
 $('theme').addEventListener('change', event => setTheme(event.target.value));
+$('outline-search').addEventListener('input', () => { buildOutline(); renderSelected(); });
+$('outline-clear').addEventListener('click', () => {
+  $('outline-search').value = '';
+  buildOutline();
+  renderSelected();
+  $('outline-search').focus();
+});
 $('previous').addEventListener('click', () => changeSlide(-1));
 $('next').addEventListener('click', () => changeSlide(1));
 $('present').addEventListener('click', enterPresentation);
@@ -348,6 +367,7 @@ $('new-deck').addEventListener('click', () => {
   deckRevision++;
   source.value = '';
   selected = 0;
+  $('outline-search').value = '';
   updateDeck();
   try {
     // An explicit empty value survives reload instead of falling back to
@@ -365,6 +385,7 @@ $('example').addEventListener('click', () => {
   deckRevision++;
   source.value = SAMPLE;
   selected = 0;
+  $('outline-search').value = '';
   updateDeck();
   saveDraft();
 });
@@ -393,6 +414,7 @@ $('import-file').addEventListener('change', async event => {
     deckRevision++;
     source.value = contents;
     selected = 0;
+    $('outline-search').value = '';
     updateDeck();
     if (draftTimer !== null) clearTimeout(draftTimer);
     draftTimer = null;

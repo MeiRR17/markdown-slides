@@ -12,3 +12,10 @@
    its slide content and number are covered without mutating the source deck. */
 .present-blackout{position:absolute;inset:0;background:#000;z-index:3;pointer-events:none}
 .present-blackout[hidden]{display:none}
+
+/* Title-only outline lookup. No slide content or notes are indexed. */
+.outline-search-controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+.outline-search-controls input{min-width:150px;max-width:330px;flex:1;border:1px solid #dce5f0;border-radius:8px;background:var(--surface,#fff);color:inherit;font:inherit;padding:9px 11px}
+.outline-search-controls input:focus-visible{outline:2px solid var(--blue)}
+.outline-search-controls span{font-size:11px;color:#8b9db2}
+.outline-empty{margin:5px 0 12px;font-size:12px;color:#697b94}

@@ -15,7 +15,7 @@ The editor starts with an example deck unless you have already saved a draft in 
 ## Workflow
 
 1. Write plain Markdown in the left editor. Separate slides with a line containing exactly three hyphens.
-2. Select a slide in the outline. The preview updates immediately.
+2. Select a slide in the outline. The preview updates immediately. For longer decks, use **Find a slide by title** to narrow the outline without modifying the Markdown or changing the current slide. Matches keep their original slide numbers; clear the search to restore all titles. Search applies only to slide titles, not bodies or private speaker notes.
 3. Choose Clean light, Midnight, or Warm sand.
 4. Press **Present deck** for full-screen presentation mode. Navigate with Right/Down/Space (next) or Left/Up (previous); Home/End jump to the beginning/end; Escape exits. The presentation toolbar includes a numeric **Go to slide** input for jumping to a specific slide without stepping through intermediate slides. Typing a slide number does not trigger presentation keyboard shortcuts. The presentation toolbar displays a live elapsed-time clock, pause/resume button and reset button. Press **P** to pause/resume or **R** to reset the timer. Press **B** (or the **Black screen** button) to temporarily hide the projected slide on a black background; press again to reveal it. Keyboard auto-repeat does not flicker the screen. The slide content/number are covered but the toolbar, slide navigation and running timer remain available, and you can advance slides while the screen stays black. Exiting or starting a presentation resets the blackout state. A progress bar indicates slide position. The timer resets when you start a new presentation session.
 5. Export your deck as a .md file. Use **Speaker notes (.txt)** to download a separate plaintext preparation sheet containing only slides with notes, their original slide numbers and titles. The notes file does not contain slide bodies or image URLs, and the export is disabled for a deck without notes. Use **Print / PDF** to print all slides or save a PDF using your browser print dialog.
@@ -30,7 +30,7 @@ The editor starts with an example deck unless you have already saved a draft in 
 - Standard hyperlinks and external image references
 - A separate line of three hyphens to create the next slide (not inside a code fence, including longer four-or-more-backtick and tilde fences)
 - Speaker notes after a standalone line with three question marks outside code fences; notes appear in the editor but are never included in the slide presentation or print output. A separate on-demand plaintext notes export retains original slide numbers while omitting slides that have no notes
-- Presentation progress, timer and optional presenter blackout are temporary, in-memory UI state; nothing about elapsed presenting time or blackout use is saved or transmitted
+- Presentation progress, timer, optional presenter blackout, and the slide-title search are temporary, in-memory UI state; nothing about elapsed presenting time, blackout use, or search terms is saved or transmitted
 
 HTML markup is **not** interpreted. The renderer constructs DOM elements and text nodes, avoiding HTML injection. Inline Markdown is intentionally a small subset, not full CommonMark: nested inline markup, complex tables, and nested lists are not currently supported.
 
@@ -49,7 +49,7 @@ Input is limited to 200,000 characters and 120 slides. The application does not 
 - index.html — responsive editor, live preview, presentation controls
 - styles.css — clean, midnight, warm sand and print themes
 - src/markdown.js — Markdown slide parser, notes parser and safe DOM renderer
-- app.js — local draft persistence, slide navigation, presenter clock, import/export and printing
+- app.js — local draft persistence, title-only slide search, slide navigation, presenter clock, import/export and printing
 - LICENSE — MIT
 
 ## Author
