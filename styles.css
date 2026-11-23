@@ -24,3 +24,10 @@
 .outline-notes-filter{display:inline-flex;align-items:center;gap:6px;font-size:12px;white-space:nowrap;cursor:pointer}
 .outline-notes-filter input{accent-color:var(--blue,#2563eb)}
 .outline-note-count{margin:0 0 9px;color:#8290a6;font-size:12px}
+
+/* Optional presenter notes are separate from the slide surface and hidden by default. */
+.present-notes-panel{position:absolute;right:18px;bottom:72px;z-index:4;width:min(420px,calc(100vw - 36px));max-height:38vh;overflow:auto;padding:15px 18px;border:1px solid #51647f;border-radius:12px;background:#122039;color:#f3f7fd;box-shadow:0 14px 45px #0008;text-align:start}
+.present-notes-panel[hidden]{display:none}
+.present-notes-panel strong{display:block;margin-bottom:8px;color:#a9c9ff;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+.present-notes-panel p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:1.6}
+@media(max-width:600px){.present-notes-panel{right:8px;bottom:64px;width:calc(100vw - 16px);max-height:32vh;padding:11px 13px}}
