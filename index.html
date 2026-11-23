@@ -50,6 +50,7 @@
   </main>
   <div id="presentation" class="presentation" hidden role="dialog" aria-modal="true" aria-label="Slide presentation">
     <div class="present-stage" id="present-stage"><div class="slide-body" id="present-body"></div><span class="slide-number" id="present-number"></span><div id="present-blackout" class="present-blackout" hidden aria-hidden="true"></div></div>
+    <aside id="present-notes-panel" class="present-notes-panel" hidden aria-label="Presenter speaker notes"><strong>Speaker notes · visible on this screen only</strong><p id="present-notes-content"></p></aside>
     <div class="present-progress" role="progressbar" aria-label="Presentation progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="present-progress"><div id="present-progress-fill"></div></div>
     <div class="present-toolbar">
       <button id="present-previous" type="button" aria-label="Previous slide">←</button>
@@ -63,6 +64,7 @@
       <button id="present-pause" type="button" title="Pause or resume timer (P)" aria-pressed="false">Ⅱ Pause</button>
       <button id="present-reset" type="button" title="Reset timer (R)">↺</button>
       <button id="present-blackout-toggle" type="button" aria-pressed="false" title="Toggle black screen (B)">■ Black screen</button>
+      <button id="present-notes-toggle" type="button" aria-expanded="false" title="Show private speaker notes (N)" disabled>Show notes</button>
       <button id="exit" type="button" title="Exit (Esc)">× Exit</button>
     </div>
   </div>
