@@ -45,6 +45,7 @@ let slides = [];
 let selected = 0;
 let showing = false;
 let blackedOut = false;
+let presenterNotesVisible = false;
 let draftTimer = null;
 let deckRevision = 0;
 let importRequest = 0;
@@ -160,6 +161,8 @@ function renderSelected() {
   $('position').textContent = 'Slide ' + position + ' of ' + total;
   $('slide-count').textContent = total + (total === 1 ? ' slide' : ' slides');
   $('notes').textContent = slide?.notes || 'Add notes after ??? on a slide.';
+  $('present-notes-content').textContent = slide?.notes || 'No speaker notes for this slide.';
+  $('present-notes-toggle').disabled = !slide?.notes.trim();
   $('previous').disabled = $('present-previous').disabled = position <= 1;
   $('next').disabled = $('present-next').disabled = position >= total;
   $('present').disabled = total === 0;
@@ -240,6 +243,7 @@ function setBlackout(active) {
   blackedOut = active;
   $('present-blackout').hidden = !active;
   $('present-blackout-toggle').setAttribute('aria-pressed', String(active));
+  $('present-notes-panel').hidden = active || !presenterNotesVisible;
   $('present-blackout-toggle').textContent = active ? '◻ Show slide' : '■ Black screen';
 }
 function toggleBlackout() {
@@ -248,6 +252,9 @@ function toggleBlackout() {
 function enterPresentation() {
   if (!slides.length) return;
   setBlackout(false);
+  presenterNotesVisible = false;
+  $('present-notes-panel').hidden = true;
+  $('present-notes-toggle').setAttribute('aria-expanded', 'false');
   showing = true;
   startClock();
   presentLayer.hidden = false;
@@ -262,6 +269,9 @@ function exitPresentation() {
   if (!showing) return;
   showing = false;
   setBlackout(false);
+  presenterNotesVisible = false;
+  $('present-notes-panel').hidden = true;
+  $('present-notes-toggle').setAttribute('aria-expanded', 'false');
   stopClock();
   presentLayer.hidden = true;
   document.body.classList.remove('presenting');
@@ -358,6 +368,13 @@ $('exit').addEventListener('click', exitPresentation);
 $('present-pause').addEventListener('click', toggleClock);
 $('present-reset').addEventListener('click', resetClock);
 $('present-blackout-toggle').addEventListener('click', toggleBlackout);
+$('present-notes-toggle').addEventListener('click', () => {
+  if (!showing || blackedOut || !slides[selected]?.notes.trim()) return;
+  presenterNotesVisible = !presenterNotesVisible;
+  $('present-notes-panel').hidden = !presenterNotesVisible;
+  $('present-notes-toggle').setAttribute('aria-expanded', String(presenterNotesVisible));
+  $('present-notes-toggle').textContent = presenterNotesVisible ? 'Hide notes' : 'Show notes';
+});
 document.addEventListener('fullscreenchange', () => {
   if (showing && document.fullscreenElement !== presentLayer) exitPresentation();
 });
@@ -370,6 +387,9 @@ document.addEventListener('keydown', event => {
     event.preventDefault();
     // Suppress keyboard auto-repeat: one physical press makes one toggle.
     if (!event.repeat) toggleBlackout();
+  } else if (event.key.toLowerCase() === 'n' && !event.ctrlKey && !event.metaKey && !event.altKey) {
+    event.preventDefault();
+    if (!event.repeat) $('present-notes-toggle').click();
   } else if (event.key.toLowerCase() === 'p' && !event.ctrlKey && !event.metaKey && !event.altKey) {
     event.preventDefault(); toggleClock();
   } else if (event.key.toLowerCase() === 'r' && !event.ctrlKey && !event.metaKey && !event.altKey) {
